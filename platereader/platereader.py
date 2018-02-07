@@ -5,6 +5,7 @@
 import pandas as pd
 import numpy as np
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime, date, time, timedelta
@@ -42,6 +43,7 @@ else:
     a = df.columns[0]
     df= df[:-2] #drop last 2 rows which contain needless strings
 
+# for time course measurements
 if a == 'Time(hh:mm:ss)':
     b = 'time (s)'
     df = df.rename(columns = {a:b})
@@ -59,24 +61,41 @@ if a == 'Time(hh:mm:ss)':
     #get time differences in total seconds
     df[a] = df[a]-df[a].min()
     df[a] = df[a].dt.total_seconds()
+    df['row'] = df.groupby(a).cumcount()
+    df= pd.merge(df, plate_row, on = 'row').drop(['row'], axis = 1).sort_values([a]).reset_index(drop=True)
+    df = df.melt(id_vars=['plate_row', a], var_name = 'plate_column').dropna()
 
+# for spectra measurements
 if a == 'Wavelength(nm)':
     df[a] = df[a].astype('float')
     df[a] = df[a].fillna(method='ffill',limit=7)
     df = df.dropna(axis=0, how='all')
+    df['row'] = df.groupby(a).cumcount()
+    df= pd.merge(df, plate_row, on = 'row').drop(['row'], axis = 1).sort_values([a]).reset_index(drop=True)
+    df = df.melt(id_vars=['plate_row', a], var_name = 'plate_column').dropna()
 
-
-df['row'] = df.groupby(a).cumcount()
-df= pd.merge(df, plate_row, on = 'row').drop(['row'], axis = 1).sort_values([a]).reset_index(drop=True)
-df = df.melt(id_vars=['plate_row', a], var_name = 'plate_column').dropna()
+# for single point measurements
+if a == 'Unnamed: 0':
+    df = df.dropna(axis=0, how='all')
+    df['row'] = df.groupby(a).cumcount()
+    df = df.drop([a], axis=1)
+    df= pd.merge(df, plate_row, on = 'row').drop(['row'], axis = 1).reset_index(drop=True)
+    df = df.melt(id_vars=['plate_row'], var_name = 'plate_column').dropna()
 
 
 #back to wide-table format
 
 while True:
     if hfile == 'empty':
-        df['sample'] = df['plate_row']+df['plate_column']
-        df = df.pivot_table(index=[a], columns = ['sample'], values= 'value').reset_index().rename_axis(None, 1)
+        if a == 'Unnamed: 0':
+            a= 'plate_row'
+            df['sample'] = df['plate_row']+df['plate_column']
+            df['time (s)'] = 'Endpoint'
+            df = df.pivot_table(index=[a], columns = ['plate_column'], values= 'value').reset_index().rename_axis(None, 1)
+            break
+        else:
+            df['sample'] = df['plate_row']+df['plate_column']
+            df = df.pivot_table(index=[a], columns = ['sample'], values= 'value').reset_index().rename_axis(None, 1)
         break
     else:
         plate = pd.read_excel(hfile)
@@ -91,6 +110,25 @@ while True:
         df = pd.merge(df, plate, on = well)
         df = df.pivot_table(index=[a], columns = ['sample'], values= 'value').reset_index().rename_axis(None, 1)
         break
+
+###sort columns
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    def atoi(text):
+        return int(text) if text.isdigit() else text
+
+    return [atoi(c) for c in re.split('(\d+)', text)]
+
+columns = df.keys()
+df = df.reindex(columns=sorted(df.columns, key=natural_keys))
+
+col = df[a]
+df.drop([a], axis=1,inplace = True)
+df.insert(0, a, col)
 
 #export data to excel
 
