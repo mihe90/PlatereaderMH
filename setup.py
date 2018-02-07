@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
     name='PlatereaderMH',
-    version='0.48',
+    version='0.49',
     author='Michael Heimes',
     packages=find_packages(),
     #extras_require = {},

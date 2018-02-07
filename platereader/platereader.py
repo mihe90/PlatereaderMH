@@ -108,8 +108,14 @@ while True:
         df['plate_column'] = df['plate_column'].astype('int')
         well = ['plate_row','plate_column']
         df = pd.merge(df, plate, on = well)
-        df = df.pivot_table(index=[a], columns = ['sample'], values= 'value').reset_index().rename_axis(None, 1)
-        break
+        if a == 'Unnamed: 0':
+            a= 'time (s)'
+            df[a] = 'Endpoint'
+            df = df.pivot_table(index=[a], columns = ['sample'], values= 'value').reset_index().rename_axis(None, 1)
+            break
+        else:
+            df = df.pivot_table(index=[a], columns = ['sample'], values= 'value').reset_index().rename_axis(None, 1)
+            break
 
 ###sort columns
 def natural_keys(text):
