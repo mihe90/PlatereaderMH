@@ -22,7 +22,3 @@ Optionally, a platelayout.xlsx file can be used to declare wells of the 96-well 
 ```
 platereader.py <path to .txt file> <path to .xlsx file>
 ```
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
