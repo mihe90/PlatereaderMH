@@ -11,7 +11,7 @@ setup(
     author='Michael Heimes',
     packages=find_packages(),
     #extras_require = {},
-    scripts=['scripts/platereader.py'],
+    scripts=['platereader/platereader.py'],
     install_requires=['pandas', 'numpy', 'openpyxl'],
     #platforms=['Linux', 'Windows', 'MacOSX'],
     #zip_safe=False,
