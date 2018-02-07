@@ -18,7 +18,7 @@ Open terminal and type:
 ```
 platereader.py <path to .txt file>
 ```
-Optionally, a platelayout.xlsx file can be used to declare wells of the 96-well plate in advance (See platelayout.xlsx).  
+Optionally, a platelayout.xlsx file can be used to declare wells of the 96-well plate in advance (See sample/sample_platelayout.xlsx).  
 ```
 platereader.py <path to .txt file> <path to .xlsx file>
 ```
