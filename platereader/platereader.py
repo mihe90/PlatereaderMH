@@ -102,6 +102,8 @@ writer = pd.ExcelWriter(filename)
 df.to_excel(writer)
 writer.save()
 
-args = ['open', folder]
-subprocess.check_call(args)
+#args = ['open', folder]
+#subprocess.check_call(args)
+print('File saved as:')
+print(filename)
 print('Done.')
