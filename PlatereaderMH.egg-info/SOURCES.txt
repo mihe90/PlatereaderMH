@@ -1,0 +1,7 @@
+setup.py
+PlatereaderMH.egg-info/PKG-INFO
+PlatereaderMH.egg-info/SOURCES.txt
+PlatereaderMH.egg-info/dependency_links.txt
+PlatereaderMH.egg-info/requires.txt
+PlatereaderMH.egg-info/top_level.txt
+platereader/platereader.py
