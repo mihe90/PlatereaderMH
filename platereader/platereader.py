@@ -84,8 +84,9 @@ if a == 'Unnamed: 0':
 
 #replace #sat and convert to numeric.
 #df['value']= df['value'].replace('#Sat', float('inf'))
-df = df[df.value != '#Sat']
-df['value']= df['value'].astype('str').str.replace(',','.').astype('float')
+if '#Sat' in df['value'].values:
+    df = df[df.value != '#Sat']
+    df['value']= df['value'].astype('str').str.replace(',','.').astype('float')
 
 #back to wide-table format
 
